@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velour Keno — Números. Poder. Distinción.</title>
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <style>
+        /* ===== LANDING NAVBAR ===== */
+        .landing-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 72px;
+            background: #111111;
+            border-bottom: 1px solid #1E1E1E;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            z-index: 1000;
+        }
+
+        .landing-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .landing-logo-text {
+            font-family: 'Georgia', serif;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 10px;
+            color: #F5F0EB;
+        }
+
+        .landing-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #F5F0EB;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            height: 40px;
+            padding: 0 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline:hover {
+            border-color: #C9A84C;
+            color: #C9A84C;
+        }
+
+        .btn-solid {
+            background: #6B0F1A;
+            border: none;
+            color: #F5F0EB;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            height: 40px;
+            padding: 0 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-solid:hover {
+            background: #A01020;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            height: 460px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0A0A0A;
+            overflow: hidden;
+            margin-top: 72px;
+        }
+
+        .hero-bg-left {
+            position: absolute;
+            left: -200px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 600px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(107, 15, 26, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-bg-right {
+            position: absolute;
+            right: -200px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 500px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(201, 168, 76, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 700px;
+            padding: 0 20px;
+        }
+
+        .hero-symbol {
+            margin-bottom: 20px;
+        }
+
+        .hero-tagline {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #C9A84C;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-family: 'Georgia', serif;
+            font-size: 80px;
+            font-weight: 300;
+            color: #F5F0EB;
+            letter-spacing: 24px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .hero-slogan {
+            font-family: 'Georgia', serif;
+            font-size: 22px;
+            font-weight: 300;
+            color: #8A7A75;
+            margin-bottom: 12px;
+        }
+
+        .hero-slogan span {
+            color: #C9A84C;
+        }
+
+        .hero-desc {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #8A7A75;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+
+        .btn-primary-lg {
+            background: #6B0F1A;
+            color: #F5F0EB;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            height: 56px;
+            width: 240px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-primary-lg:hover {
+            background: #A01020;
+            transform: scale(1.02);
+        }
+
+        .btn-secondary-lg {
+            background: transparent;
+            border: 1px solid #C9A84C;
+            color: #C9A84C;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            height: 56px;
+            width: 240px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+        }
+
+        .btn-secondary-lg:hover {
+            background: rgba(201, 168, 76, 0.1);
+            transform: scale(1.02);
+        }
+
+        .hero-social {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #8A7A75;
+            margin-top: 16px;
+        }
+
+        /* ===== FEATURES ===== */
+        .features {
+            padding: 60px 40px;
+            background: #0A0A0A;
+        }
+
+        .features-title {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #8A7A75;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: #111111;
+            border: 1px solid #1E1E1E;
+            border-radius: 16px;
+            padding: 32px;
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-card.featured {
+            border-color: #C9A84C;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            background: #1A1500;
+            color: #C9A84C;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            align-self: flex-start;
+        }
+
+        .feature-icon {
+            margin-bottom: 16px;
+        }
+
+        .feature-name {
+            font-family: 'Georgia', serif;
+            font-size: 20px;
+            color: #F5F0EB;
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            color: #8A7A75;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .feature-stat {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #C9A84C;
+            margin-top: 16px;
+        }
+
+        .feature-stat.green {
+            color: #38A169;
+        }
+
+        /* ===== FOOTER ===== */
+        .landing-footer {
+            height: 68px;
+            background: #111111;
+            border-top: 1px solid #1E1E1E;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #8A7A75;
+        }
+
+        .footer-left .footer-logo-text {
+            font-family: 'Georgia', serif;
+            font-size: 14px;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: #8A7A75;
+            margin-right: 4px;
+        }
+
+        .footer-center {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #8A7A75;
+            opacity: 0.6;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 16px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+
+        .footer-right a {
+            color: #8A7A75;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-right a:hover {
+            color: #C9A84C;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .landing-navbar {
+                padding: 0 16px;
+            }
+
+            .btn-outline {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 48px;
+                letter-spacing: 16px;
+            }
+
+            .hero-slogan {
+                font-size: 18px;
+            }
+
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn-primary-lg,
+            .btn-secondary-lg {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .features-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .feature-card {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .landing-footer {
+                flex-direction: column;
+                height: auto;
+                gap: 8px;
+                padding: 20px 16px;
+                text-align: center;
+            }
+
+            .footer-center {
+                order: 3;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="landing-navbar" role="navigation" aria-label="Navegación principal">
+        <a class="landing-logo" href="/">
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,10 84.6,30 84.6,70 50,90 15.4,70 15.4,30" fill="none" stroke="#6B0F1A" stroke-width="4"/>
+                <polygon points="50,22 74.2,36 74.2,64 50,78 25.8,64 25.8,36" fill="none" stroke="#C9A84C" stroke-width="3"/>
+                <circle cx="50" cy="50" r="8" fill="#6B0F1A"/>
+                <circle cx="50" cy="50" r="3" fill="#C9A84C"/>
+            </svg>
+            <span class="landing-logo-text">VELOUR</span>
+        </a>
+        <div class="landing-actions">
+            <a href="/login.html" class="btn-outline">INICIAR SESIÓN</a>
+            <a href="/register.html" class="btn-solid">CREAR CUENTA</a>
+        </div>
+    </nav>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" role="banner">
+        <div class="hero-bg-left" aria-hidden="true"></div>
+        <div class="hero-bg-right" aria-hidden="true"></div>
+
+        <div class="hero-content">
+            <div class="hero-symbol">
+                <svg width="120" height="120" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <polygon points="50,5 89.6,27.5 89.6,72.5 50,95 10.4,72.5 10.4,27.5" fill="none" stroke="#6B0F1A" stroke-width="2"/>
+                    <polygon points="50,19.4 75.8,31.3 75.8,68.7 50,80.6 24.2,68.7 24.2,31.3" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+                    <circle cx="50" cy="50" r="10" fill="#6B0F1A"/>
+                    <circle cx="50" cy="50" r="4" fill="#C9A84C"/>
+                    <line x1="50" y1="5" x2="50" y2="30" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                    <line x1="89.6" y1="27.5" x2="76.4" y2="40.7" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                    <line x1="89.6" y1="72.5" x2="76.4" y2="59.3" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                    <line x1="50" y1="95" x2="50" y2="70" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                    <line x1="10.4" y1="72.5" x2="23.6" y2="59.3" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                    <line x1="10.4" y1="27.5" x2="23.6" y2="40.7" stroke="#C9A84C" stroke-opacity="0.4" stroke-width="1"/>
+                </svg>
+            </div>
+
+            <p class="hero-tagline">EL JUEGO DE LOS QUE SABEN ELEGIR</p>
+            <h1 class="hero-title">VELOUR</h1>
+            <p class="hero-slogan">Números <span>·</span> Poder <span>·</span> Distinción.</p>
+            <p class="hero-desc">El único Keno diseñado para quienes no dejan nada al azar.</p>
+
+            <div class="hero-cta">
+                <a href="/register.html" class="btn-primary-lg">COMENZAR A JUGAR →</a>
+                <a href="#features" class="btn-secondary-lg">VER CÓMO FUNCIONA</a>
+            </div>
+
+            <p class="hero-social">✦ 1,200 jugadores activos esta semana</p>
+        </div>
+    </section>
+
+    <!-- ===== FEATURES ===== -->
+    <section class="features" id="features" aria-label="Características de Velour Keno">
+        <h2 class="features-title">¿POR QUÉ VELOUR?</h2>
+
+        <div class="features-grid">
+            <!-- Card 1: Keno Clásico -->
+            <article class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polygon points="16,2 28.7,10 28.7,22 16,30 3.3,22 3.3,10" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+                        <polygon points="16,7.5 24.5,12.5 24.5,19.5 16,24.5 7.5,19.5 7.5,12.5" fill="none" stroke="#C9A84C" stroke-width="1"/>
+                        <circle cx="16" cy="16" r="3" fill="#C9A84C" fill-opacity="0.6"/>
+                    </svg>
+                </div>
+                <h3 class="feature-name">Keno Clásico</h3>
+                <p class="feature-desc">Selecciona hasta 10 números del 1 al 80. Gana según tus aciertos.</p>
+                <p class="feature-stat">Hasta 25,000× tu apuesta</p>
+            </article>
+
+            <!-- Card 2: Sorteo en Vivo (featured) -->
+            <article class="feature-card featured">
+                <span class="feature-badge">MÁS POPULAR</span>
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 22L6 28L9 18L2 10L12 8L16 2L20 8L30 10L23 18L26 28L16 22Z" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h3 class="feature-name">Sorteo en Vivo</h3>
+                <p class="feature-desc">20 números sorteados al instante. 5 velocidades. Control total.</p>
+                <p class="feature-stat">Resultado en menos de 3 segundos</p>
+            </article>
+
+            <!-- Card 3: Sistema de Niveles -->
+            <article class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 2L20 10L28 12L22 18L24 26L16 22L8 26L10 18L4 12L12 10L16 2Z" fill="none" stroke="#C9A84C" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <h3 class="feature-name">Sistema de Niveles</h3>
+                <p class="feature-desc">Bronce, Plata, Oro, Platino, Diamante. Cada partida cuenta.</p>
+                <p class="feature-stat green">1,000 créditos de bienvenida</p>
+            </article>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="landing-footer" role="contentinfo">
+        <div class="footer-left">
+            <svg width="20" height="20" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="50,10 84.6,30 84.6,70 50,90 15.4,70 15.4,30" fill="none" stroke="#6B0F1A" stroke-width="4"/>
+                <polygon points="50,22 74.2,36 74.2,64 50,78 25.8,64 25.8,36" fill="none" stroke="#C9A84C" stroke-width="3"/>
+                <circle cx="50" cy="50" r="8" fill="#6B0F1A"/>
+                <circle cx="50" cy="50" r="3" fill="#C9A84C"/>
+            </svg>
+            <span class="footer-logo-text">VELOUR</span>
+            <span>© 2026 Velour Keno</span>
+        </div>
+        <div class="footer-center">Juego responsable · Solo mayores de 18 años</div>
+        <div class="footer-right">
+            <a href="#">Términos</a>
+            <a href="#">Privacidad</a>
+            <a href="#">Soporte</a>
+        </div>
+    </footer>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script src="/js/api.js"></script>
+    <script>
+        (function () {
+            // Redirigir si ya está autenticado
+            if (isAuthenticated()) {
+                window.location.href = '/game.html';
+                return;
+            }
+
+            // Smooth scroll para el botón "VER CÓMO FUNCIONA"
+            document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+                anchor.addEventListener('click', function (e) {
+                    var target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        })();
+    </script>
+</body>
+</html>
