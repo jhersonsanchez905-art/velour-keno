@@ -25,6 +25,11 @@ public class Game {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    // Sala donde se jugó esta partida (puede ser null para partidas individuales)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")
+    private GameRoom room;
+    
     // Números seleccionados por el jugador (ej: "3,15,22,45,67")
     @Column(name = "selected_numbers", nullable = false, length = 50)
     private String selectedNumbers;
