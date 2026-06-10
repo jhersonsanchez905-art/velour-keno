@@ -71,7 +71,7 @@ public class RoomScheduler {
     * Asegurar que siempre haya al menos una sala disponible
     * Se ejecuta cada 30 segundos
     */
-    @Scheduled(fixedRate = 30000)
+    @Scheduled(fixedDelay = 5000)
     public void ensureAvailableRoom() {
         List<GameRoom> available = roomRepository.findAvailableRooms();
         if (available.isEmpty()) {

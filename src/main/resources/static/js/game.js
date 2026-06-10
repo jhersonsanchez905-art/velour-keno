@@ -588,6 +588,14 @@ function handleChatKeypress(event) {
 function loadRooms() {
     apiFetch('/rooms')
         .then(function (data) {
+            if (!data || data.length === 0) {
+                return apiFetch('/rooms', { method: 'POST' }).then(function () {
+                    return apiFetch('/rooms');
+                });
+            }
+            return data;
+        })
+        .then(function (data) {
             renderRoomList(data);
         })
         .catch(function (error) {
