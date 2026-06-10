@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velour Keno — Mi Perfil</title>
+
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+
+    <style>
+        .profile-card {
+            background: #111111;
+            border: 1px solid #1E1E1E;
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .profile-label {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #8A7A75;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            margin-top: 16px;
+        }
+
+        .profile-label:first-child {
+            margin-top: 0;
+        }
+
+        .profile-input {
+            width: 100%;
+            height: 48px;
+            background: #1A1A1A;
+            border: 1px solid #2A2A2A;
+            border-radius: 10px;
+            color: #F5F0EB;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            padding: 0 16px;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        .profile-input:focus {
+            border-color: #C9A84C;
+            outline: none;
+        }
+
+        .profile-input::placeholder {
+            color: #5A5A5A;
+        }
+
+        .profile-divider {
+            height: 1px;
+            background: #1E1E1E;
+            margin: 20px 0;
+            border: none;
+        }
+
+        .btn-primary-profile {
+            width: 100%;
+            height: 48px;
+            background: #6B0F1A;
+            color: #F5F0EB;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-primary-profile:hover {
+            background: #A01020;
+        }
+
+        .btn-primary-profile:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline-profile {
+            width: 100%;
+            height: 44px;
+            background: transparent;
+            border: 1px solid #2A2A2A;
+            color: #8A7A75;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .btn-outline-profile:hover {
+            border-color: #C9A84C;
+            color: #C9A84C;
+        }
+
+        /* ===== TABLA DE PARTIDAS RECIENTES ===== */
+        .recent-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+        }
+
+        .recent-table th {
+            padding: 8px 12px;
+            text-align: left;
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: #8A7A75;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-weight: 500;
+            border-bottom: 1px solid #1E1E1E;
+        }
+
+        .recent-table th:last-child {
+            text-align: right;
+        }
+
+        .recent-table td {
+            padding: 10px 12px;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #F5F0EB;
+            border-bottom: 1px solid #1A1A1A;
+        }
+
+        .recent-table td:last-child {
+            text-align: right;
+        }
+
+        .recent-empty {
+            padding: 20px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #8A7A75;
+        }
+
+        /* ===== STATS GRID ===== */
+        .stats-mini-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 8px;
+        }
+
+        .stat-mini-label {
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #8A7A75;
+            display: block;
+        }
+
+        .stat-mini-value {
+            font-family: 'Georgia', serif;
+            font-size: 20px;
+            color: #F5F0EB;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 16px !important;
+            }
+
+            .profile-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar inyectado por navbar.js -->
+
+    <main class="main-content" style="padding:40px; max-width:1200px; margin:0 auto;">
+
+        <div class="profile-grid" style="display:grid; grid-template-columns:320px 1fr; gap:24px;">
+
+            <!-- ================================================================
+                 COLUMNA IZQUIERDA
+                 ================================================================ -->
+            <div style="display:flex; flex-direction:column; gap:16px;">
+
+                <!-- Tarjeta de perfil -->
+                <div class="profile-card" style="text-align:center;">
+                    <div id="avatarInitials" style="width:80px; height:80px; border-radius:50%; background:#6B0F1A; border:2px solid #C9A84C; display:flex; align-items:center; justify-content:center; font-family:Georgia,serif; font-size:28px; color:#F5F0EB; margin:0 auto 12px;">??</div>
+                    <span style="display:inline-block; background:#1A1200; color:#C9A84C; font-family:Arial,sans-serif; font-size:10px; letter-spacing:1px; text-transform:uppercase; padding:4px 12px; border-radius:20px; margin-bottom:12px;">JUGADOR ✦</span>
+                    <h2 id="profileUsername" style="font-family:Georgia,serif; font-size:22px; color:#F5F0EB; margin:0;">-</h2>
+                    <p id="profileEmail" style="font-family:Arial,sans-serif; font-size:13px; color:#8A7A75; margin:4px 0 0;">-</p>
+                    <p style="font-family:Arial,sans-serif; font-size:12px; color:#8A7A75; margin-top:8px;">Miembro desde <span id="memberSince">-</span></p>
+                    <button onclick="document.getElementById('editProfileSection').scrollIntoView({behavior:'smooth'})" style="margin-top:16px; background:#6B0F1A; color:#F5F0EB; font-family:Arial,sans-serif; font-size:13px; font-weight:700; height:44px; width:100%; border:none; border-radius:10px; cursor:pointer; transition:background 0.2s ease;" onmouseover="this.style.background='#A01020'" onmouseout="this.style.background='#6B0F1A'">EDITAR PERFIL</button>
+                </div>
+
+                <!-- Tarjeta de saldo -->
+                <div class="profile-card" style="text-align:center;">
+                    <span style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; letter-spacing:1.5px; text-transform:uppercase; display:block;">MI SALDO</span>
+                    <span id="profileBalance" style="font-family:Georgia,serif; font-size:40px; font-weight:700; color:#C9A84C; display:block; margin:8px 0;">0 ✦</span>
+                    <span style="font-family:Arial,sans-serif; font-size:12px; color:#8A7A75;">Créditos virtuales</span>
+                    <hr class="profile-divider">
+                    <button onclick="openRechargeModal()" style="background:transparent; border:1px solid #C9A84C; color:#C9A84C; font-family:Arial,sans-serif; font-size:13px; font-weight:700; height:44px; width:100%; border-radius:10px; cursor:pointer; transition:background 0.2s ease;" onmouseover="this.style.background='rgba(201,168,76,0.1)'" onmouseout="this.style.background='transparent'">RECARGAR CRÉDITOS</button>
+                </div>
+
+                <!-- Tarjeta de estadísticas -->
+                <div class="profile-card">
+                    <span style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:4px;">MIS ESTADÍSTICAS</span>
+                    <div class="stats-mini-grid">
+                        <div>
+                            <span class="stat-mini-label">PARTIDAS</span>
+                            <span class="stat-mini-value" id="statsGames">0</span>
+                        </div>
+                        <div>
+                            <span class="stat-mini-label">MAYOR PREMIO</span>
+                            <span class="stat-mini-value" id="statsBest" style="color:#C9A84C;">0 ✦</span>
+                        </div>
+                        <div>
+                            <span class="stat-mini-label">TOTAL GANADO</span>
+                            <span class="stat-mini-value" id="statsWon" style="color:#38A169;">0 ✦</span>
+                        </div>
+                        <div>
+                            <span class="stat-mini-label">TOTAL APOSTADO</span>
+                            <span class="stat-mini-value" id="statsBet">0 ✦</span>
+                        </div>
+                        <div>
+                            <span class="stat-mini-label">SALDO INICIAL</span>
+                            <span class="stat-mini-value">1,000 ✦</span>
+                        </div>
+                        <div>
+                            <span class="stat-mini-label">BALANCE NETO</span>
+                            <span class="stat-mini-value" id="statsNet">0 ✦</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================================================================
+                 COLUMNA DERECHA
+                 ================================================================ -->
+            <div style="display:flex; flex-direction:column; gap:16px;">
+
+                <!-- Formulario: Información personal -->
+                <div class="profile-card" id="editProfileSection">
+                    <span style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; letter-spacing:1.5px; text-transform:uppercase; display:block;">INFORMACIÓN PERSONAL</span>
+
+                    <span class="profile-label">NOMBRE DE USUARIO</span>
+                    <input type="text" id="editUsername" class="profile-input" placeholder="Tu nombre de usuario">
+
+                    <span class="profile-label">EMAIL</span>
+                    <input type="email" id="editEmail" class="profile-input" placeholder="tu@email.com">
+
+                    <hr class="profile-divider">
+
+                    <button id="saveProfileBtn" class="btn-primary-profile" onclick="saveProfile()">GUARDAR CAMBIOS</button>
+                </div>
+
+                <!-- Formulario: Cambiar contraseña -->
+                <div class="profile-card">
+                    <span style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; letter-spacing:1.5px; text-transform:uppercase; display:block;">SEGURIDAD</span>
+
+                    <span class="profile-label">CONTRASEÑA ACTUAL</span>
+                    <input type="password" id="currentPassword" class="profile-input" placeholder="Contraseña actual">
+
+                    <span class="profile-label">NUEVA CONTRASEÑA</span>
+                    <input type="password" id="newPassword" class="profile-input" placeholder="Mínimo 8 caracteres">
+
+                    <div style="margin-top:8px;">
+                        <div style="height:4px; background:#2A2A2A; border-radius:2px; overflow:hidden;">
+                            <div id="passwordStrengthBar" style="height:100%; width:0%; border-radius:2px; transition:width 0.3s ease, background 0.3s ease;"></div>
+                        </div>
+                        <span id="passwordStrengthText" style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; margin-top:4px; display:block;"></span>
+                    </div>
+
+                    <span class="profile-label">CONFIRMAR NUEVA CONTRASEÑA</span>
+                    <input type="password" id="confirmPassword" class="profile-input" placeholder="Repite la nueva contraseña">
+
+                    <hr class="profile-divider">
+
+                    <button class="btn-outline-profile" onclick="changePassword()">ACTUALIZAR CONTRASEÑA</button>
+                </div>
+
+                <!-- Partidas recientes -->
+                <div class="profile-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-family:Arial,sans-serif; font-size:11px; color:#8A7A75; letter-spacing:1.5px; text-transform:uppercase;">ÚLTIMAS 5 PARTIDAS</span>
+                        <a href="/history.html" style="font-family:Arial,sans-serif; font-size:12px; color:#C9A84C; text-decoration:none;">Ver todo →</a>
+                    </div>
+                    <table class="recent-table">
+                        <thead>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>ACIERTOS</th>
+                                <th>APUESTA</th>
+                                <th>PREMIO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recentGamesBody">
+                            <tr><td colspan="4"><div class="recent-empty">No hay partidas aún</div></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script>
+        // ============================================================
+        // CARGAR PERFIL
+        // ============================================================
+
+        var profileGames = [];
+
+        /**
+         * Obtiene los datos del perfil y las partidas del usuario.
+         */
+        function loadProfile() {
+            apiFetch('/user/profile')
+                .then(function (user) {
+                    document.getElementById('avatarInitials').textContent = getInitials(user.username);
+                    document.getElementById('profileUsername').textContent = user.username;
+                    document.getElementById('profileEmail').textContent = user.email;
+                    document.getElementById('memberSince').textContent = formatDate(user.createdAt);
+                    document.getElementById('profileBalance').textContent = formatCredits(user.balance);
+                    document.getElementById('editUsername').value = user.username;
+                    document.getElementById('editEmail').value = user.email;
+
+                    return apiFetch('/game/history');
+                })
+                .then(function (games) {
+                    profileGames = games || [];
+                    renderRecentGames(profileGames);
+                    calculateStats(profileGames);
+                })
+                .catch(function (error) {
+                    showToast('Error al cargar perfil', 'error');
+                });
+        }
+
+        // ============================================================
+        // GUARDAR PERFIL
+        // ============================================================
+
+        /**
+         * Envía los cambios del perfil al servidor.
+         */
+        function saveProfile() {
+            var username = document.getElementById('editUsername').value.trim();
+            var email = document.getElementById('editEmail').value.trim();
+
+            if (!username) {
+                showToast('El nombre de usuario es obligatorio', 'warning');
+                return;
+            }
+
+            if (!email) {
+                showToast('El email es obligatorio', 'warning');
+                return;
+            }
+
+            var btn = document.getElementById('saveProfileBtn');
+            btn.disabled = true;
+            btn.textContent = 'GUARDANDO...';
+
+            apiFetch('/user/profile', 'PUT', { username: username, email: email })
+                .then(function () {
+                    showToast('Perfil actualizado', 'success');
+                    return apiFetch('/user/profile');
+                })
+                .then(function (user) {
+                    document.getElementById('avatarInitials').textContent = getInitials(user.username);
+                    document.getElementById('profileUsername').textContent = user.username;
+                    document.getElementById('profileEmail').textContent = user.email;
+                })
+                .catch(function (error) {
+                    var msg = (error.data && error.data.mensaje) || 'Error al guardar';
+                    showToast(msg, 'error');
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.textContent = 'GUARDAR CAMBIOS';
+                });
+        }
+
+        // ============================================================
+        // CAMBIAR CONTRASEÑA
+        // ============================================================
+
+        /**
+         * Envía la solicitud de cambio de contraseña al servidor.
+         */
+        function changePassword() {
+            var currentPassword = document.getElementById('currentPassword').value;
+            var newPassword = document.getElementById('newPassword').value;
+            var confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword.length < 8) {
+                showToast('La contraseña debe tener mínimo 8 caracteres', 'warning');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showToast('Las contraseñas no coinciden', 'warning');
+                return;
+            }
+
+            apiFetch('/user/password', 'PUT', {
+                currentPassword: currentPassword,
+                newPassword: newPassword
+            })
+                .then(function () {
+                    showToast('Contraseña actualizada', 'success');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                    updatePasswordStrength('');
+                })
+                .catch(function (error) {
+                    var msg = (error.data && error.data.mensaje) || 'Error al actualizar contraseña';
+                    showToast(msg, 'error');
+                });
+        }
+
+        // ============================================================
+        // FUERZA DE CONTRASEÑA
+        // ============================================================
+
+        /**
+         * Actualiza el indicador visual de fortaleza de contraseña.
+         * @param {string} password - Contraseña a evaluar.
+         */
+        function updatePasswordStrength(password) {
+            var bar = document.getElementById('passwordStrengthBar');
+            var text = document.getElementById('passwordStrengthText');
+            var score = 0;
+
+            if (password.length >= 8) score++;
+            if (/[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[^A-Za-z0-9]/.test(password)) score++;
+
+            var niveles = [
+                { width: '0%', color: '', text: '' },
+                { width: '25%', color: '#E53E3E', text: 'Muy débil' },
+                { width: '50%', color: '#ED8936', text: 'Débil' },
+                { width: '75%', color: '#C9A84C', text: 'Aceptable' },
+                { width: '100%', color: '#38A169', text: 'Segura' }
+            ];
+
+            var nivel = niveles[score];
+            bar.style.width = nivel.width;
+            bar.style.background = nivel.color;
+            text.textContent = nivel.text;
+            text.style.color = nivel.color || '#8A7A75';
+        }
+
+        // ============================================================
+        // PARTIDAS RECIENTES
+        // ============================================================
+
+        /**
+         * Renderiza las últimas 5 partidas en la tabla.
+         * @param {object[]} games - Lista de partidas.
+         */
+        function renderRecentGames(games) {
+            var tbody = document.getElementById('recentGamesBody');
+            tbody.innerHTML = '';
+
+            var lastFive = games.slice(-5).reverse();
+
+            if (lastFive.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4"><div class="recent-empty">No hay partidas aún</div></td></tr>';
+                return;
+            }
+
+            for (var i = 0; i < lastFive.length; i++) {
+                var g = lastFive[i];
+                var tr = document.createElement('tr');
+
+                var td1 = document.createElement('td');
+                td1.textContent = formatDate(g.playedAt);
+
+                var td2 = document.createElement('td');
+                td2.textContent = (g.hits || 0) + '/' + ((g.selectedNumbers || '').toString().split(',').length || 0);
+                td2.style.color = g.hits > 0 ? '#38A169' : '#E53E3E';
+
+                var td3 = document.createElement('td');
+                td3.textContent = formatCredits(g.betAmount);
+
+                var td4 = document.createElement('td');
+                if (g.winAmount > 0) {
+                    td4.textContent = '+' + formatCredits(g.winAmount);
+                    td4.style.color = '#C9A84C';
+                } else {
+                    td4.textContent = '-';
+                    td4.style.color = '#8A7A75';
+                }
+
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+                tr.appendChild(td4);
+                tbody.appendChild(tr);
+            }
+        }
+
+        // ============================================================
+        // ESTADÍSTICAS
+        // ============================================================
+
+        /**
+         * Calcula y actualiza las estadísticas agregadas del usuario.
+         * @param {object[]} games - Lista completa de partidas.
+         */
+        function calculateStats(games) {
+            var totalGames = games.length;
+            var totalBet = 0;
+            var totalWon = 0;
+            var bestWin = 0;
+
+            for (var i = 0; i < games.length; i++) {
+                var g = games[i];
+                totalBet += g.betAmount || 0;
+                totalWon += g.winAmount || 0;
+                if (g.winAmount > bestWin) bestWin = g.winAmount;
+            }
+
+            var netBalance = totalWon - totalBet;
+
+            document.getElementById('statsGames').textContent = totalGames;
+            document.getElementById('statsBest').textContent = formatCredits(bestWin);
+            document.getElementById('statsWon').textContent = formatCredits(totalWon);
+            document.getElementById('statsBet').textContent = formatCredits(totalBet);
+
+            var netEl = document.getElementById('statsNet');
+            netEl.textContent = (netBalance >= 0 ? '+' : '') + formatCredits(netBalance);
+            netEl.style.color = netBalance >= 0 ? '#38A169' : '#E53E3E';
+        }
+
+        // ============================================================
+        // INICIALIZACIÓN
+        // ============================================================
+
+        (function () {
+            requireAuth()
+                .then(function (user) {
+                    if (!user) return;
+                    return renderNavbar('perfil');
+                })
+                .then(function () {
+                    loadProfile();
+                })
+                .catch(function (error) {
+                    console.error('Error al inicializar perfil:', error);
+                });
+
+            // Indicador de fuerza de contraseña en tiempo real
+            document.getElementById('newPassword').addEventListener('input', function () {
+                updatePasswordStrength(this.value);
+            });
+        })();
+    </script>
+</body>
+</html>
