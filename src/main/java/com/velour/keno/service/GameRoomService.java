@@ -78,9 +78,16 @@ public class GameRoomService {
             throw new IllegalStateException("La sala está llena");
         }
 
-        // Verificar que el usuario no esté ya en una sala activa
+        // Si ya está en ESTA sala específica, no lanzar error, solo retornar
+        boolean yaEnEstaSala = playerRepository.existsByRoomAndUser(room, user);
+        if (yaEnEstaSala) {
+            broadcastPlayers(roomId);
+            return playerRepository.findByRoomAndUser(room, user).orElseThrow();
+        }
+
+        // Si está en OTRA sala activa distinta, sí bloquear
         if (playerRepository.isUserInActiveRoom(user)) {
-            throw new IllegalStateException("Ya estás en una sala activa");
+            throw new IllegalStateException("Ya estás en otra sala activa");
         }
 
         // Crear registro del jugador en la sala

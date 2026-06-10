@@ -404,14 +404,17 @@ function renderRoomList(rooms) {
 }
 
 /**
- * Maneja el clic en unirse a una sala.
+ * Maneja el clic en "UNIRSE" desde el lobby.
+ * Primero cambia la vista, luego ejecuta el join.
  * @param {number} roomId - ID de la sala.
  */
 function handleJoinRoom(roomId) {
-    joinRoom(roomId);
-
+    // Cambiar vista primero
     document.getElementById('gameView').style.display = '';
     document.getElementById('lobbyView').style.display = 'none';
+
+    // Luego hacer el join (REST + WebSocket)
+    joinRoom(roomId);
 }
 
 // ==========================================

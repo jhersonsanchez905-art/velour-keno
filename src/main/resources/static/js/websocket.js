@@ -89,7 +89,8 @@ function onWebSocketError(frame) {
 // ==========================================
 
 /**
- * Se une a una sala y suscribe a todos sus canales.
+ * Se une a una sala: primero REST para registrar en BD,
+ * luego suscripciones WebSocket para recibir eventos.
  * @param {number} roomId - ID de la sala.
  */
 function joinRoom(roomId) {
@@ -97,6 +98,71 @@ function joinRoom(roomId) {
         showToast('Sin conexión', 'error');
         return;
     }
+
+    // PASO 1: Registrar en la BD via REST (este endpoint SÍ existe)
+    apiFetch('/rooms/' + roomId + '/join', 'POST')
+        .then(function () {
+            // PASO 2: Guardar sala actual
+            currentRoomId = roomId;
+            setCurrentRoom(roomId);
+
+            var subs = {};
+
+            // PASO 3: Suscribirse a todos los canales de la sala
+            subs.players = stompClient.subscribe(
+                '/topic/room/' + roomId + '/players',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    renderPlayerList(data);
+                }
+            );
+
+            subs.timer = stompClient.subscribe(
+                '/topic/room/' + roomId + '/timer',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    updateTimer(data.seconds);
+                }
+            );
+
+            subs.draw = stompClient.subscribe(
+                '/topic/room/' + roomId + '/draw',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    animateDraw(data.number, data.index);
+                }
+            );
+
+            subs.results = stompClient.subscribe(
+                '/topic/room/' + roomId + '/results',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    showResultsOverlay(data);
+                }
+            );
+
+            subs.chat = stompClient.subscribe(
+                '/topic/room/' + roomId + '/chat',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    addChatMessage(data);
+                }
+            );
+
+            activeSubscriptions[roomId] = subs;
+
+            showToast('Te uniste a la sala #' + roomId, 'success');
+
+            // PASO 4: Pedir la lista actualizada de jugadores inmediatamente
+            apiFetch('/rooms').then(function (rooms) {
+                renderRoomList(rooms);
+            });
+        })
+        .catch(function (error) {
+            var msg = (error.data && error.data.mensaje) || 'Error al unirse a la sala';
+            showToast(msg, 'error');
+        });
+}
 
     currentRoomId = roomId;
     setCurrentRoom(roomId);
