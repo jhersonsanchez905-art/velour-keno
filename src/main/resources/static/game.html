@@ -240,6 +240,13 @@
 
                     // Parchear enlaces del navbar para abrir modales
                     patchNavbarLinks();
+
+                    // Abrir modal si viene de otra página via sessionStorage
+                    var pendingModal = sessionStorage.getItem('openModal');
+                    if (pendingModal) {
+                        sessionStorage.removeItem('openModal');
+                        setTimeout(function() { openModal(pendingModal); }, 800);
+                    }
                 })
                 .catch(function (error) {
                     console.error('Error al inicializar la página:', error);

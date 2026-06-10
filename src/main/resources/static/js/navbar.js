@@ -39,9 +39,9 @@ async function renderNavbar(activePage) {
         <li class="nav-separator"></li>
         <li><a href="#" class="nav-link${activePage === 'estadisticas' ? ' active' : ''}">ESTADÍSTICAS</a></li>
         <li class="nav-separator"></li>
-        <li><a href="#" class="nav-link${activePage === 'paytable' ? ' active' : ''}">PAYTABLE</a></li>
+        <li><a href="/game.html" onclick="sessionStorage.setItem('openModal','paytableModal')" class="nav-link${activePage === 'paytable' ? ' active' : ''}">PAYTABLE</a></li>
         <li class="nav-separator"></li>
-        <li><a href="#" class="nav-link${activePage === 'ayuda' ? ' active' : ''}">¿CÓMO JUGAR?</a></li>
+        <li><a href="/game.html" onclick="sessionStorage.setItem('openModal','howToPlayModal')" class="nav-link${activePage === 'ayuda' ? ' active' : ''}">¿CÓMO JUGAR?</a></li>
       </ul>
       <div class="nav-right">
         <button class="nav-recharge" onclick="openRechargeModal()">+ Créditos</button>
