@@ -618,18 +618,17 @@ function setCurrentRoom(roomId) {
         });
     }
 
-    // Botones de velocidad
-    var speedBtns = document.querySelectorAll('.speed-btn');
-    for (var i = 0; i < speedBtns.length; i++) {
-        speedBtns[i].addEventListener('click', function () {
-            var allBtns = document.querySelectorAll('.speed-btn');
-            for (var j = 0; j < allBtns.length; j++) {
-                allBtns[j].classList.remove('active');
-            }
-            this.classList.add('active');
-            drawSpeed = this.getAttribute('data-speed');
-        });
-    }
+    // Botones de velocidad — event delegation
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('speed-btn')) {
+            document.querySelectorAll('.speed-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            e.target.classList.add('active');
+            drawSpeed = e.target.getAttribute('data-speed');
+            showToast('Velocidad: ' + e.target.textContent, 'info');
+        }
+    });
 
     // Renderizar tablero si está vacío
     var board = document.getElementById('gameBoard');
