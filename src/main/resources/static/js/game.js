@@ -16,7 +16,7 @@ let drawSpeed = 'normal';
 let isDrawing = false;
 // currentRoomId declarado en websocket.js
 let totalTimer = 210;
-let currentBalance = 0;
+let currentBalance = 0; // se actualiza al cargar el perfil
 
 const DRAW_SPEEDS = {
     'slow': 1200,
