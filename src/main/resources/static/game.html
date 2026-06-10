@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velour Keno — Jugar</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/navbar.css">
+    <link rel="stylesheet" href="/css/game.css">
+
+    <!-- STOMP WebSocket -->
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+
+    <!-- JS modules -->
+    <script src="/js/api.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/websocket.js"></script>
+    <script src="/js/game.js"></script>
+</head>
+<body>
+
+    <!-- Navbar inyectado por navbar.js -->
+
+    <main class="main-content">
+
+        <!-- ==================================================
+             LOBBY — Salas disponibles antes de jugar
+             ================================================== -->
+        <section id="lobbyView" class="lobby-view" aria-label="Salas disponibles">
+            <div class="lobby-header">
+                <h1>Salas disponibles</h1>
+                <p>Únete a una sala para comenzar a jugar</p>
+            </div>
+
+            <div id="roomList" class="room-list">
+                <!-- Tarjetas de salas inyectadas por JS -->
+            </div>
+
+            <div class="lobby-info">
+                <span>Mínimo 3 jugadores para iniciar · Máximo 5 jugadores</span>
+                <span>Sorteo cada 3:30 minutos</span>
+            </div>
+        </section>
+
+        <!-- ==================================================
+             GAME VIEW — Pantalla de juego dentro de una sala
+             ================================================== -->
+        <section id="gameView" class="game-view" style="display:none" aria-label="Pantalla de juego">
+
+            <!-- PANEL IZQUIERDO: Jugadores -->
+            <aside class="players-panel" aria-label="Jugadores en la sala">
+                <div class="players-header">
+                    <span>JUGADORES</span>
+                    <span id="playerCount">0/5</span>
+                </div>
+                <div id="playerList" class="player-list">
+                    <!-- Jugadores inyectados por JS -->
+                </div>
+                <div class="room-info">
+                    <span id="roomStatus">ESPERANDO</span>
+                    <span id="roundNumber">Ronda 1</span>
+                </div>
+            </aside>
+
+            <!-- CENTRO: Tablero de juego -->
+            <div class="board-container">
+                <div class="board-header">
+                    <div class="board-title">
+                        <h2>Selecciona tus números</h2>
+                        <p>Elige entre 1 y 10 números</p>
+                    </div>
+                    <div class="board-actions">
+                        <button id="quickPickBtn" onclick="quickPick(5)">QUICK PICK</button>
+                        <button id="clearBtn" onclick="clearSelection()">LIMPIAR</button>
+                    </div>
+                </div>
+
+                <!-- Cuadrícula 10×8 = 80 números -->
+                <div id="gameBoard" class="game-board" role="grid" aria-label="Tablero de números 1 al 80">
+                    <!-- Números 1-80 inyectados por renderBoard() en game.js -->
+                </div>
+
+                <!-- Indicador de selección -->
+                <div class="selected-indicator">
+                    <span>Seleccionados: </span>
+                    <span id="selectedCount">0</span>
+                    <span>/10</span>
+                </div>
+            </div>
+
+            <!-- PANEL DERECHO: Controles -->
+            <aside class="controls-panel" aria-label="Controles del juego">
+
+                <!-- Temporizador -->
+                <div class="timer-card">
+                    <span class="timer-label">PRÓXIMO SORTEO</span>
+                    <span id="timerDisplay" class="timer-display" aria-live="polite">3:30</span>
+                    <div class="timer-bar">
+                        <div id="timerFill" class="timer-fill"></div>
+                    </div>
+                </div>
+
+                <!-- Apuesta -->
+                <div class="bet-card">
+                    <span class="card-label">TU APUESTA</span>
+                    <div class="bet-input-wrapper">
+                        <label for="betAmount" class="sr-only">Cantidad de apuesta</label>
+                        <input type="number" id="betAmount" value="100"
+                               min="10" max="1000" step="10" aria-label="Cantidad de apuesta">
+                        <span class="bet-symbol" aria-hidden="true">✦</span>
+                    </div>
+                    <div class="quick-bet-buttons" role="group" aria-label="Apuestas rápidas">
+                        <button onclick="adjustBet(10)" aria-label="Añadir 10">+10</button>
+                        <button onclick="adjustBet(50)" aria-label="Añadir 50">+50</button>
+                        <button onclick="adjustBet(100)" aria-label="Añadir 100">+100</button>
+                        <button onclick="adjustBet(500)" aria-label="Añadir 500">+500</button>
+                    </div>
+                    <span id="balanceDisplay" class="balance-display">Saldo: 0 ✦</span>
+                </div>
+
+                <!-- Velocidad del sorteo -->
+                <div class="speed-card">
+                    <span class="card-label">VELOCIDAD DEL SORTEO</span>
+                    <div class="speed-buttons" role="group" aria-label="Velocidad del sorteo">
+                        <button class="speed-btn" data-speed="slow">LENTA</button>
+                        <button class="speed-btn active" data-speed="normal">NORMAL</button>
+                        <button class="speed-btn" data-speed="fast">RÁPIDA</button>
+                        <button class="speed-btn" data-speed="very-fast">MUY RÁPIDA</button>
+                        <button class="speed-btn" data-speed="instant">INSTANT</button>
+                    </div>
+                </div>
+
+                <!-- Botón jugar -->
+                <button id="playBtn" class="play-button" onclick="submitPlay()" disabled>
+                    <span class="play-text">JUGAR</span>
+                    <span class="play-subtitle" id="playSubtitle">Apuesta: 100 ✦</span>
+                </button>
+
+                <!-- Último resultado -->
+                <div class="result-card" id="lastResult" style="display:none" aria-live="polite">
+                    <span class="card-label">ÚLTIMO RESULTADO</span>
+                    <div class="result-stats">
+                        <div class="stat">
+                            <span class="stat-label">SELECCIONADOS</span>
+                            <span class="stat-value" id="resultSelected">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">ACIERTOS</span>
+                            <span class="stat-value success" id="resultHits">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">APUESTA</span>
+                            <span class="stat-value" id="resultBet">-</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">PREMIO</span>
+                            <span class="stat-value gold" id="resultPrize">-</span>
+                        </div>
+                    </div>
+                    <div id="drawnNumbersRow" class="drawn-numbers-row">
+                        <!-- Círculos pequeños con números sorteados -->
+                    </div>
+                </div>
+
+            </aside>
+
+        </section>
+
+        <!-- ==================================================
+             CHAT — Panel fijo en la esquina inferior derecha
+             ================================================== -->
+        <div id="chatPanel" class="chat-panel collapsed" role="complementary" aria-label="Chat de sala">
+            <div class="chat-header" onclick="toggleChat()" role="button" tabindex="0" aria-expanded="false" onkeypress="if(event.key==='Enter')toggleChat()">
+                <span>CHAT DE SALA</span>
+                <span id="chatToggleIcon">▲</span>
+            </div>
+            <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
+                <!-- Mensajes inyectados por JS -->
+            </div>
+            <div class="chat-input-wrapper">
+                <label for="chatInput" class="sr-only">Mensaje de chat</label>
+                <input type="text" id="chatInput" placeholder="Escribe un mensaje..."
+                       maxlength="200" onkeypress="handleChatKeypress(event)" aria-label="Mensaje de chat">
+                <button onclick="submitChat()" aria-label="Enviar mensaje">→</button>
+            </div>
+        </div>
+
+        <!-- ==================================================
+             OVERLAY — Resultados después de cada sorteo
+             ================================================== -->
+        <div id="resultsOverlay" class="results-overlay" style="display:none" role="dialog" aria-modal="true" aria-label="Resultados de la ronda">
+            <div class="results-card">
+                <h2>RESULTADOS DE LA RONDA</h2>
+                <div id="resultsTable" class="results-table">
+                    <!-- Resultados inyectados por JS -->
+                </div>
+                <div class="next-round-timer">
+                    <span>Nueva ronda en </span>
+                    <span id="nextRoundCountdown">10</span>
+                    <span> segundos</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ============================================================
+        // Inicialización de la página de juego
+        // ============================================================
+        (function () {
+            var user = null;
+
+            // Verificar autenticación y obtener datos del usuario
+            requireAuth()
+                .then(function (data) {
+                    if (!data) return;
+                    user = data;
+
+                    // Renderizar la barra de navegación
+                    return renderNavbar('jugar');
+                })
+                .then(function () {
+                    if (!user) return;
+
+                    // Actualizar saldo mostrado en el panel de controles
+                    var balanceEl = document.getElementById('balanceDisplay');
+                    if (balanceEl) {
+                        balanceEl.textContent = 'Saldo: ' + formatCredits(user.balance);
+                    }
+
+                    // Renderizar el tablero de juego
+                    renderBoard();
+
+                    // Conectar WebSocket para comunicación en tiempo real
+                    connectWebSocket();
+
+                    // Cargar salas disponibles
+                    loadRooms();
+                })
+                .catch(function (error) {
+                    console.error('Error al inicializar la página:', error);
+                });
+
+            // Reconectar WebSocket al recuperar visibilidad de la pestaña
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    var socket = window.velourSocket;
+                    if (!socket || !socket.connected) {
+                        connectWebSocket();
+                    }
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
