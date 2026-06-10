@@ -273,7 +273,7 @@
          * Obtiene el historial de partidas del servidor.
          */
         function loadHistory() {
-            apiFetch('/game/history')
+            apiFetch('/api/game/history')
                 .then(function (data) {
                     allGames = data || [];
                     applyFilter();

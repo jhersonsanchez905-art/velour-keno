@@ -330,7 +330,7 @@
          * Obtiene los datos del perfil y las partidas del usuario.
          */
         function loadProfile() {
-            apiFetch('/user/profile')
+            apiFetch('/api/user/profile')
                 .then(function (user) {
                     document.getElementById('avatarInitials').textContent = getInitials(user.username);
                     document.getElementById('profileUsername').textContent = user.username;
@@ -377,10 +377,10 @@
             btn.disabled = true;
             btn.textContent = 'GUARDANDO...';
 
-            apiFetch('/user/profile', 'PUT', { username: username, email: email })
+            apiFetch('/api/user/profile', 'PUT', { username: username, email: email })
                 .then(function () {
                     showToast('Perfil actualizado', 'success');
-                    return apiFetch('/user/profile');
+                    return apiFetch('/api/user/profile');
                 })
                 .then(function (user) {
                     document.getElementById('avatarInitials').textContent = getInitials(user.username);
@@ -419,7 +419,7 @@
                 return;
             }
 
-            apiFetch('/user/password', 'PUT', {
+            apiFetch('/api/user/password', 'PUT', {
                 currentPassword: currentPassword,
                 newPassword: newPassword
             })
