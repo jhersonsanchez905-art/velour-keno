@@ -208,7 +208,7 @@ function joinRoom(roomId) {
     });
 
     showToast('Te uniste a la sala #' + roomId, 'success');
-}
+
 
 // ==========================================
 // ENVIAR JUGADA
