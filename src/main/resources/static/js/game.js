@@ -583,7 +583,7 @@ function handleChatKeypress(event) {
  * Obtiene la lista de salas disponibles desde el servidor.
  */
 function loadRooms() {
-    apiFetch('/api/rooms')
+    apiFetch('/rooms')
         .then(function (data) {
             renderRoomList(data);
         })
