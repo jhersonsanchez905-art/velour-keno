@@ -88,16 +88,70 @@ function onWebSocketError(frame) {
 // UNIRSE A UNA SALA
 // ==========================================
 
-/**
- * Se une a una sala: primero REST para registrar en BD,
- * luego suscripciones WebSocket para recibir eventos.
- * @param {number} roomId - ID de la sala.
- */
 function joinRoom(roomId) {
     if (!isConnected) {
         showToast('Sin conexión', 'error');
         return;
     }
+
+    apiFetch('/rooms/' + roomId + '/join', 'POST')
+        .then(function () {
+            currentRoomId = roomId;
+            setCurrentRoom(roomId);
+
+            var subs = {};
+
+            subs.players = stompClient.subscribe(
+                '/topic/room/' + roomId + '/players',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    renderPlayerList(data);
+                }
+            );
+
+            subs.timer = stompClient.subscribe(
+                '/topic/room/' + roomId + '/timer',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    updateTimer(data.seconds);
+                }
+            );
+
+            subs.draw = stompClient.subscribe(
+                '/topic/room/' + roomId + '/draw',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    animateDraw(data.number, data.index);
+                }
+            );
+
+            subs.results = stompClient.subscribe(
+                '/topic/room/' + roomId + '/results',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    showResultsOverlay(data);
+                }
+            );
+
+            subs.chat = stompClient.subscribe(
+                '/topic/room/' + roomId + '/chat',
+                function (message) {
+                    var data = JSON.parse(message.body);
+                    addChatMessage(data);
+                }
+            );
+
+            activeSubscriptions[roomId] = subs;
+            showToast('Te uniste a la sala #' + roomId, 'success');
+
+            apiFetch('/rooms').then(function (rooms) {
+                renderRoomList(rooms);
+            });
+        })
+        .catch(function (error) {
+            var msg = (error.data && error.data.mensaje) || 'Error al unirse a la sala';
+            showToast(msg, 'error');
+        });
 
     // PASO 1: Registrar en la BD via REST (este endpoint SÍ existe)
     apiFetch('/rooms/' + roomId + '/join', 'POST')
