@@ -14,7 +14,7 @@ let selectedNumbers = [];
 let betAmount = 100;
 let drawSpeed = 'normal';
 let isDrawing = false;
-let currentRoomId = null;
+// currentRoomId declarado en websocket.js
 let totalTimer = 210;
 let currentBalance = 0;
 
