@@ -226,11 +226,7 @@
                 .then(function () {
                     if (!user) return;
 
-                    // Actualizar saldo mostrado en el panel de controles
-                    var balanceEl = document.getElementById('balanceDisplay');
-                    if (balanceEl) {
-                        balanceEl.textContent = 'Saldo: ' + formatCredits(user.balance);
-                    }
+                    updateBalance(user.balance);
 
                     // Renderizar el tablero de juego
                     renderBoard();
