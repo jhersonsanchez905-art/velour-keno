@@ -240,6 +240,9 @@
 
                     // Cargar salas disponibles
                     loadRooms();
+
+                    // Parchear enlaces del navbar para abrir modales
+                    patchNavbarLinks();
                 })
                 .catch(function (error) {
                     console.error('Error al inicializar la página:', error);
@@ -255,6 +258,489 @@
                 }
             });
         })();
+    </script>
+
+    <style>
+        /* ===== MODALES VELOUR ===== */
+        .velour-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            pointer-events: none;
+        }
+
+        .velour-modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .velour-modal {
+            background: #111111;
+            border: 1px solid #1E1E1E;
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: modalIn 0.2s ease;
+        }
+
+        @keyframes modalIn {
+            from { transform: translateY(16px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .velour-modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #8A7A75;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .velour-modal-close:hover { color: #F5F0EB; }
+
+        .velour-modal-title {
+            font-family: 'Georgia', serif;
+            font-size: 24px;
+            font-weight: 400;
+            color: #F5F0EB;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+        }
+
+        .velour-modal-subtitle {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #8A7A75;
+            margin-bottom: 28px;
+        }
+
+        /* Paytable */
+        .paytable-wrapper { width: 100%; overflow-x: auto; }
+
+        .paytable {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        .paytable th {
+            padding: 10px 12px;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 11px;
+            color: #8A7A75;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: #1A1A1A;
+            border-bottom: 1px solid #2A2A2A;
+        }
+
+        .paytable th:first-child { text-align: left; }
+
+        .paytable td {
+            padding: 10px 12px;
+            text-align: center;
+            border-bottom: 1px solid #1A1A1A;
+        }
+
+        .paytable tr:nth-child(odd) td { background: #111111; }
+
+        .paytable tr:nth-child(even) td { background: #0F0F0F; }
+
+        .paytable tr:hover td { background: #141414; }
+
+        .paytable td:first-child {
+            background: #1A1A1A;
+            color: #F5F0EB;
+            font-weight: 600;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        .paytable td.multiplier { color: #C9A84C; font-weight: 700; }
+
+        .paytable td.zero { color: #3A3A3A; }
+
+        .paytable td.na { color: #2A2A2A; }
+
+        .paytable-note {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            color: #8A7A75;
+            margin-top: 16px;
+        }
+
+        /* Stats modal */
+        .modal-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .modal-stat-card {
+            background: #1A1A1A;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .modal-stat-label {
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            color: #8A7A75;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .modal-stat-value {
+            font-family: 'Georgia', serif;
+            font-size: 28px;
+            color: #F5F0EB;
+            display: block;
+        }
+
+        .modal-stat-value.gold { color: #C9A84C; }
+
+        .modal-stat-value.green { color: #38A169; }
+
+        .modal-stat-value.red { color: #E53E3E; }
+
+        .modal-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #C9A84C;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .modal-link:hover { color: #E2C06A; }
+
+        /* How to play */
+        .step-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .step-circle {
+            width: 32px;
+            height: 32px;
+            background: #6B0F1A;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Georgia', serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #F5F0EB;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-content { flex: 1; }
+
+        .step-title {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #F5F0EB;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #8A7A75;
+            line-height: 1.6;
+        }
+
+        .step-info-box {
+            background: #1A1A1A;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+            color: #8A7A75;
+            line-height: 1.6;
+        }
+    </style>
+
+    <!-- ================================================================
+         MODAL 1 — PAYTABLE
+         ================================================================ -->
+    <div id="paytableModal" class="velour-modal-overlay" onclick="if(event.target===this) closeModal('paytableModal')" role="dialog" aria-modal="true" aria-label="Tabla de pagos">
+        <div class="velour-modal" style="width:700px;">
+            <button class="velour-modal-close" onclick="closeModal('paytableModal')" aria-label="Cerrar">✕</button>
+            <h2 class="velour-modal-title">TABLA DE PAGOS</h2>
+            <p class="velour-modal-subtitle">Multiplicadores según números seleccionados y aciertos</p>
+
+            <p style="font-family:Arial,sans-serif; font-size:13px; color:#8A7A75; margin-bottom:20px;">
+                Selecciona entre 1 y 10 números. El premio se calcula multiplicando tu apuesta por el multiplicador correspondiente.
+            </p>
+
+            <div class="paytable-wrapper">
+                <table class="paytable">
+                    <thead>
+                        <tr>
+                            <th>SELEC.</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                            <th>6</th>
+                            <th>7</th>
+                            <th>8</th>
+                            <th>9</th>
+                            <th>10</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1 sel.</td><td class="multiplier">3</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>2 sel.</td><td class="zero">0</td><td class="multiplier">9</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>3 sel.</td><td class="zero">0</td><td class="multiplier">2</td><td class="multiplier">16</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>4 sel.</td><td class="zero">0</td><td class="multiplier">1</td><td class="multiplier">5</td><td class="multiplier">50</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>5 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">3</td><td class="multiplier">12</td><td class="multiplier">100</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>6 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">2</td><td class="multiplier">5</td><td class="multiplier">25</td><td class="multiplier">500</td><td class="na">-</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>7 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">1</td><td class="multiplier">3</td><td class="multiplier">10</td><td class="multiplier">75</td><td class="multiplier">1000</td><td class="na">-</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>8 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">2</td><td class="multiplier">8</td><td class="multiplier">30</td><td class="multiplier">200</td><td class="multiplier">5000</td><td class="na">-</td><td class="na">-</td></tr>
+                        <tr><td>9 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">1</td><td class="multiplier">5</td><td class="multiplier">15</td><td class="multiplier">100</td><td class="multiplier">1000</td><td class="multiplier">10000</td><td class="na">-</td></tr>
+                        <tr><td>10 sel.</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="zero">0</td><td class="multiplier">3</td><td class="multiplier">10</td><td class="multiplier">50</td><td class="multiplier">500</td><td class="multiplier">5000</td><td class="multiplier">25000</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="paytable-note">✦ Premio = Apuesta × Multiplicador. Ejemplo: 100 ✦ × 50 = 5,000 ✦</p>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         MODAL 2 — ESTADÍSTICAS
+         ================================================================ -->
+    <div id="statsModal" class="velour-modal-overlay" onclick="if(event.target===this) closeModal('statsModal')" role="dialog" aria-modal="true" aria-label="Estadísticas">
+        <div class="velour-modal" style="width:600px;">
+            <button class="velour-modal-close" onclick="closeModal('statsModal')" aria-label="Cerrar">✕</button>
+            <h2 class="velour-modal-title">MIS ESTADÍSTICAS</h2>
+            <p class="velour-modal-subtitle">Resumen de tu historial de juego</p>
+
+            <div class="modal-stats-grid">
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">PARTIDAS JUGADAS</span>
+                    <span class="modal-stat-value" id="modalStatsGames">-</span>
+                </div>
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">TOTAL APOSTADO</span>
+                    <span class="modal-stat-value" id="modalStatsBet">-</span>
+                </div>
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">TOTAL GANADO</span>
+                    <span class="modal-stat-value green" id="modalStatsWon">-</span>
+                </div>
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">MAYOR PREMIO</span>
+                    <span class="modal-stat-value gold" id="modalStatsBest">-</span>
+                </div>
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">RATIO DE ACIERTOS</span>
+                    <span class="modal-stat-value" id="modalStatsRatio">-</span>
+                </div>
+                <div class="modal-stat-card">
+                    <span class="modal-stat-label">BALANCE NETO</span>
+                    <span class="modal-stat-value" id="modalStatsNet">-</span>
+                </div>
+            </div>
+
+            <a href="/history.html" class="modal-link">Ver historial completo →</a>
+        </div>
+    </div>
+
+    <!-- ================================================================
+         MODAL 3 — ¿CÓMO JUGAR?
+         ================================================================ -->
+    <div id="howToPlayModal" class="velour-modal-overlay" onclick="if(event.target===this) closeModal('howToPlayModal')" role="dialog" aria-modal="true" aria-label="Cómo jugar">
+        <div class="velour-modal" style="width:560px;">
+            <button class="velour-modal-close" onclick="closeModal('howToPlayModal')" aria-label="Cerrar">✕</button>
+            <h2 class="velour-modal-title">¿CÓMO JUGAR?</h2>
+            <p class="velour-modal-subtitle">Velour Keno — Números. Poder. Distinción.</p>
+
+            <div class="step-item">
+                <div class="step-circle">1</div>
+                <div class="step-content">
+                    <p class="step-title">Únete a una sala</p>
+                    <p class="step-desc">Espera en el lobby hasta que una sala esté disponible. Necesitas al menos 3 jugadores para iniciar el sorteo.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-circle">2</div>
+                <div class="step-content">
+                    <p class="step-title">Selecciona tus números</p>
+                    <p class="step-desc">Elige entre 1 y 10 números del tablero (1-80). Usa Quick Pick para selección aleatoria.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-circle">3</div>
+                <div class="step-content">
+                    <p class="step-title">Apuesta y confirma</p>
+                    <p class="step-desc">Define el monto de tu apuesta (mín. 10 ✦, máx. 1,000 ✦) y presiona JUGAR antes de que termine el timer.</p>
+                </div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-circle">4</div>
+                <div class="step-content">
+                    <p class="step-title">Espera el sorteo</p>
+                    <p class="step-desc">El sistema sortea 20 números aleatorios cada 3:30 minutos. Todos los jugadores de la sala ven el mismo sorteo.</p>
+                </div>
+            </div>
+
+            <div class="step-info-box">💡 El premio se calcula multiplicando tu apuesta por el multiplicador de la tabla de pagos según tus aciertos.</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // FUNCIONES DE MODALES
+        // ============================================================
+
+        /**
+         * Abre un modal.
+         * @param {string} modalId - ID del elemento modal overlay.
+         */
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        /**
+         * Cierra un modal.
+         * @param {string} modalId - ID del elemento modal overlay.
+         */
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Cerrar modal con tecla Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeModal('paytableModal');
+                closeModal('statsModal');
+                closeModal('howToPlayModal');
+            }
+        });
+
+        /**
+         * Abre el modal de estadísticas y carga los datos.
+         */
+        async function openStatsModal() {
+            openModal('statsModal');
+
+            try {
+                var games = await apiFetch('/game/history');
+                var list = games || [];
+
+                if (list.length > 0) {
+                    var totalGames = list.length;
+                    var totalBet = 0;
+                    var totalWon = 0;
+                    var bestWin = 0;
+                    var totalHits = 0;
+                    var totalSelected = 0;
+
+                    for (var i = 0; i < list.length; i++) {
+                        var g = list[i];
+                        totalBet += g.betAmount || 0;
+                        totalWon += g.winAmount || 0;
+                        if (g.winAmount > bestWin) bestWin = g.winAmount;
+                        totalHits += g.hits || 0;
+                        var nums = (g.selectedNumbers || '').toString().split(',');
+                        totalSelected += nums.length;
+                    }
+
+                    var ratio = totalSelected > 0 ? (totalHits / totalSelected) * 100 : 0;
+                    var netBalance = totalWon - totalBet;
+
+                    document.getElementById('modalStatsGames').textContent = totalGames;
+                    document.getElementById('modalStatsBet').textContent = formatCredits(totalBet);
+                    document.getElementById('modalStatsWon').textContent = formatCredits(totalWon);
+                    document.getElementById('modalStatsBest').textContent = formatCredits(bestWin);
+                    document.getElementById('modalStatsRatio').textContent = ratio.toFixed(1) + '%';
+
+                    var netEl = document.getElementById('modalStatsNet');
+                    netEl.textContent = (netBalance >= 0 ? '+' : '') + formatCredits(netBalance);
+                    netEl.className = 'modal-stat-value ' + (netBalance >= 0 ? 'green' : 'red');
+                } else {
+                    document.getElementById('modalStatsGames').textContent = '0';
+                    document.getElementById('modalStatsBet').textContent = '0 ✦';
+                    document.getElementById('modalStatsWon').textContent = '0 ✦';
+                    document.getElementById('modalStatsBest').textContent = '0 ✦';
+                    document.getElementById('modalStatsRatio').textContent = '0%';
+                    var emptyNet = document.getElementById('modalStatsNet');
+                    emptyNet.textContent = '0 ✦';
+                    emptyNet.className = 'modal-stat-value';
+                }
+            } catch (error) {
+                showToast('Error cargando estadísticas', 'error');
+            }
+        }
+
+        /**
+         * Parchea los enlaces del navbar para abrir modales en lugar de navegar.
+         */
+        function patchNavbarLinks() {
+            // Encontrar enlace de ESTADÍSTICAS
+            var navLinks = document.querySelectorAll('.nav-link');
+            for (var i = 0; i < navLinks.length; i++) {
+                var link = navLinks[i];
+                var text = link.textContent.trim();
+
+                if (text === 'ESTADÍSTICAS') {
+                    link.href = '#';
+                    link.onclick = function (e) {
+                        e.preventDefault();
+                        openStatsModal();
+                        return false;
+                    };
+                } else if (text === 'PAYTABLE') {
+                    link.href = '#';
+                    link.onclick = function (e) {
+                        e.preventDefault();
+                        openModal('paytableModal');
+                        return false;
+                    };
+                } else if (text === '¿CÓMO JUGAR?') {
+                    link.href = '#';
+                    link.onclick = function (e) {
+                        e.preventDefault();
+                        openModal('howToPlayModal');
+                        return false;
+                    };
+                }
+            }
+        }
     </script>
 </body>
 </html>
