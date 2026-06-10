@@ -48,7 +48,10 @@ public class SecurityConfig {
                     "/css/**",
                     "/js/**",
                     "/images/**",
-                    "/favicon.ico"
+                    "/favicon.ico",
+                    "/game.html",
+                    "/history.html",
+                    "/profile.html"
                 ).permitAll()
                 // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
