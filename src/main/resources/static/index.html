@@ -551,7 +551,7 @@
                 return;
             }
 
-            // Smooth scroll para el botón "VER CÓMO FUNCIONA"
+            document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
                 anchor.addEventListener('click', function (e) {
                     var target = document.querySelector(this.getAttribute('href'));
@@ -565,4 +565,6 @@
     </script>
 </body>
 </html>
+
+
 
