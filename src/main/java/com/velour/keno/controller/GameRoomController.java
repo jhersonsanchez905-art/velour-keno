@@ -1,20 +1,15 @@
 package com.velour.keno.controller;
 
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.handler.annotation.Header;
 import com.velour.keno.dto.*;
 import com.velour.keno.entity.GameRoom;
-//import com.velour.keno.entity.GameRoomPlayer;
 import com.velour.keno.service.ChatService;
 import com.velour.keno.service.GameRoomService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-//import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -32,20 +27,18 @@ public class GameRoomController {
     private final ChatService chatService;
 
     // ============ ENDPOINTS REST ============
-    // GET /api/rooms — lista de salas disponibles
+
     @GetMapping
     public ResponseEntity<List<GameRoomResponse>> getAvailableRooms() {
         return ResponseEntity.ok(roomService.getAvailableRooms());
     }
 
-    // POST /api/rooms — crear sala o obtener una disponible
     @PostMapping
     public ResponseEntity<Map<String, Object>> getOrCreateRoom() {
         GameRoom room = roomService.getOrCreateAvailableRoom();
-        return ResponseEntity.ok(Map.of("roomId", room.getId(),"status", room.getStatus()));
+        return ResponseEntity.ok(Map.of("roomId", room.getId(), "status", room.getStatus()));
     }
 
-    // POST /api/rooms/{id}/join — unirse a una sala
     @PostMapping("/{id}/join")
     public ResponseEntity<Map<String, String>> joinRoom(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
         roomService.joinRoom(id, userDetails.getUsername());
@@ -55,42 +48,23 @@ public class GameRoomController {
     // ============ ENDPOINTS WEBSOCKET ============
 
     @MessageMapping("/room.play")
-public void handlePlay(@Valid RoomPlayRequest request,
-                       @Header(value = "simpUser", required = false) Principal principal,
-                       SimpMessageHeaderAccessor headerAccessor) {
-    String username = null;
-    if (principal != null) {
-        username = principal.getName();
-    } else if (headerAccessor.getUser() != null) {
-        username = headerAccessor.getUser().getName();
+    public void handlePlay(@Valid RoomPlayRequest request, SimpMessageHeaderAccessor headerAccessor) {
+        Principal principal = headerAccessor.getUser();
+        if (principal == null) return;
+
+        roomService.submitPlay(
+            request.getRoomId(),
+            principal.getName(),
+            request.getSelectedNumbers(),
+            request.getBetAmount()
+        );
     }
-    if (username == null) return;
 
-    roomService.submitPlay(
-        request.getRoomId(),
-        username,
-        request.getSelectedNumbers(),
-        request.getBetAmount()
-    );
-}
-
-@MessageMapping("/room.chat")
-public void handleChat(@Valid RoomChatRequest request,
-                       SimpMessageHeaderAccessor headerAccessor) {
-    String username = headerAccessor.getUser() != null
-        ? headerAccessor.getUser().getName() : null;
-    if (username == null) return;
-
-    chatService.sendMessage(
-        request.getRoomId(),
-        username,
-        request.getMessage()
-    );
-}
-
-    // Recibir mensaje de chat via WebSocket
     @MessageMapping("/room.chat")
-    public void handleChat(@Valid RoomChatRequest request, Principal principal) {
+    public void handleChat(@Valid RoomChatRequest request, SimpMessageHeaderAccessor headerAccessor) {
+        Principal principal = headerAccessor.getUser();
+        if (principal == null) return;
+
         chatService.sendMessage(
             request.getRoomId(),
             principal.getName(),
