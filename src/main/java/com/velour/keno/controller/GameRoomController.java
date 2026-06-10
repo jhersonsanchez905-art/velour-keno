@@ -1,5 +1,7 @@
 package com.velour.keno.controller;
 
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.handler.annotation.Header;
 import com.velour.keno.dto.*;
 import com.velour.keno.entity.GameRoom;
 //import com.velour.keno.entity.GameRoomPlayer;
@@ -9,7 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 //import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -50,16 +54,39 @@ public class GameRoomController {
 
     // ============ ENDPOINTS WEBSOCKET ============
 
-    // Recibir jugada via WebSocket
     @MessageMapping("/room.play")
-    public void handlePlay(@Valid RoomPlayRequest request, Principal principal) {
-        roomService.submitPlay(
-            request.getRoomId(),
-            principal.getName(),
-            request.getSelectedNumbers(),
-            request.getBetAmount()
-        );
+public void handlePlay(@Valid RoomPlayRequest request,
+                       @Header(value = "simpUser", required = false) Principal principal,
+                       SimpMessageHeaderAccessor headerAccessor) {
+    String username = null;
+    if (principal != null) {
+        username = principal.getName();
+    } else if (headerAccessor.getUser() != null) {
+        username = headerAccessor.getUser().getName();
     }
+    if (username == null) return;
+
+    roomService.submitPlay(
+        request.getRoomId(),
+        username,
+        request.getSelectedNumbers(),
+        request.getBetAmount()
+    );
+}
+
+@MessageMapping("/room.chat")
+public void handleChat(@Valid RoomChatRequest request,
+                       SimpMessageHeaderAccessor headerAccessor) {
+    String username = headerAccessor.getUser() != null
+        ? headerAccessor.getUser().getName() : null;
+    if (username == null) return;
+
+    chatService.sendMessage(
+        request.getRoomId(),
+        username,
+        request.getMessage()
+    );
+}
 
     // Recibir mensaje de chat via WebSocket
     @MessageMapping("/room.chat")
