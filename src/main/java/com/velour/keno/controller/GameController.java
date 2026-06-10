@@ -56,7 +56,7 @@ public class GameController {
             @AuthenticationPrincipal UserDetails userDetails) {
 
         User user = getAuthenticatedUser(userDetails.getUsername());
-        List<Game> games = gameRepository.findByUserOrderByPlayedAtDesc(user);
+        List<Game> games = gameRepository.findByUser(user);
 
         List<Map<String, Object>> result = new ArrayList<>();
         for (Game game : games) {
