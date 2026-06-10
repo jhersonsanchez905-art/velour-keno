@@ -217,18 +217,6 @@ function joinRoom(roomId) {
             showToast(msg, 'error');
         });
 }
-
-    currentRoomId = roomId;
-    setCurrentRoom(roomId);
-
-    var subs = {};
-
-    // Suscripción a jugadores
-    subs.players = stompClient.subscribe('/topic/room/' + roomId + '/players', function (message) {
-        var data = JSON.parse(message.body);
-        renderPlayerList(data);
-    });
-
     // Suscripción al temporizador
     subs.timer = stompClient.subscribe('/topic/room/' + roomId + '/timer', function (message) {
         var data = JSON.parse(message.body);
